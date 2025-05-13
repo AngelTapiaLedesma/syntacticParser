@@ -1,0 +1,3 @@
+Pos	Literal
+0	24R
+1	12R

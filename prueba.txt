@@ -1,0 +1,22 @@
+@variable1_ -> 12p*
+@variable2_ -> 24R*
+@variable3_ -> 12R*
+@cadena_ -> --Hola Mundo--*
+Si <@variable1_ h @variable2_> #
+    Haz #
+        @resultado_ -> @variable1_ sum @variable2_*
+        @resultado_ -> @variable1_ mult @variable2_*
+        @resultado_ -> @variable1_ mult 24R*
+        -- Multiples opereaciones--*
+        [ Este es un comentario dentro del código ]
+    #!
+    Mientras <@resultado_ m 100> #
+        @resultado_ -> @resultado_ mult 2*
+        --se realiza la multiplicacion--*
+    #!
+    sieas
+☺
+#! Sino #
+    @resultado_ -> 0*
+#!
+Nulo*
