@@ -9,6 +9,25 @@ Objetivo: Elaborar un analizador léxico en lex/flex que reconozca los component
 a las clases abajo descritas y que fueron definidas en clase. 
 Generando un analizador el cual reconozca de forma óptima las componentes del lenguaje para así posteriormente 
 adjuntar su salida con la entrada del analizador sintáctico.
+
+char *palRes[16][2] = {
+    {"Bool","b"},
+    {"Cade","c"},
+    {"Continuar","t"},
+    {"Devo","d"},
+    {"Ent","n"},
+    {"Fals","q"},
+    {"Flota","f"},
+    {"Global","g"},
+    {"Haz","h"},
+    {"Mientras","w"},
+    {"Nulo","u"},
+    {"Para","o"},
+    {"Parar","p"},
+    {"Si","i"},
+    {"Sino","l"},
+    {"Ver","m"}
+};
 */
 #include <stdio.h>
 
@@ -45,6 +64,14 @@ Literal *agrega_literal(Literal *tabla, char *literal);
 Literal *buscar_literal(Literal *tabla, char *literal);
 void imprimir_tabla(Literal *tabla, char *nombre_arch);
 char *token_literales(int pos, char *nombre, Literal **tabla);
+
+// Atomos
+char *generarAtomo(int pos, int val);
+char *atomoPalRes(int val);
+char *atomoSimbEsp(int val);
+char *atomoOpArim(int val);
+char *atomoOpRel(int val);
+char *atomoOpAsig(int val);
 
 // Creación de las tablas dinámicas
 Simbolo *tabla_simbolos = NULL;
@@ -240,11 +267,12 @@ int buscar_catalogo(char *catalogo[], char *literal, int tamano) {
 char *token(int pos, char *yytext, char *catalogo[], int tamano){
     int valor = 0;
     valor = buscar_catalogo(catalogo,yytext,tamano);
-    printf("(%i,%i)",pos,valor);
-    
+    printf("(%i,%i)\t",pos,valor);
     FILE *archTokens = abrir_archivo("tokens.txt","a");
     fprintf(archTokens, "%i,%i\n", pos, valor);
     cerrar_archivo(archTokens);
+    // Sintactico
+    printf("%s\t",generarAtomo(pos,valor));
     return "Caracter";
 }
 
@@ -291,6 +319,167 @@ FILE *abrir_archivo(const char *nombre_archivo, const char *modo) {
 void cerrar_archivo(FILE *archivo) {
     fclose(archivo);
 }
+
+// Analisis sintactico 
+char *generarAtomo(int pos, int val){
+    switch(pos){
+        case 0:
+            return atomoPalRes(val);
+        case 1:
+            return atomoSimbEsp(val);
+        case 2:
+            break;
+        case 3:
+            return atomoOpArim(val);
+        case 4:
+            return atomoOpRel(val);
+        case 5:
+            return atomoOpAsig(val);
+        case 6:
+            break;
+        case 7:
+            break;
+        case 8:
+            break;
+        default:
+            break;
+
+    }
+}
+
+
+char *atomoPalRes(int val){
+    switch(val){
+        case 0:
+            return "b";
+        case 1:
+            return "c";
+        case 2:
+            return "t";
+        case 3:
+            return "d";
+        case 4:
+            return "n";
+        case 5:
+            return "q";
+        case 6:
+            return "f";
+        case 7:
+            return "g";
+        case 8:
+            return "h";
+        case 9:
+            return "w";
+        case 10:
+            return "u";
+        case 11:
+            return "o";
+        case 12:
+            return "p";
+        case 13:
+            return "i";
+        case 14:
+            return "l";
+        case 15:
+            return "m";
+        default:
+            break;
+    }
+}
+char *atomoSimbEsp(int val){
+    switch(val){
+        case 0:
+            return "(";
+        case 1:
+            return ")";
+        case 2:
+            return "[";
+        case 3:
+            return "]";
+        case 4:
+            return "{";
+        case 5:
+            return "}";
+        case 6:
+            return ";";
+        case 7:
+            return ",";
+        case 8:
+            return ".";
+        default:
+            break;
+    }
+}
+char *atomoOpArim(int val){
+    switch(val){
+        case 0:
+            return "+";
+        case 1:
+            return "-";
+        case 2:
+            return "*";
+        case 3:
+            return "/";
+        case 4:
+            return "%";
+        case 5:
+            return "z";
+        case 6:
+            return "j";
+        case 7:
+            return "k";
+        case 8:
+            return "~";
+        default:
+            break;
+    }
+}
+char *atomoOpRel(int val){
+    switch(val){
+        case 0:
+            return ">";
+        case 1:
+            return "<";
+        case 2:
+            return "¡";
+        case 3:
+            return "!";
+        case 4:
+            return "x";
+        case 5:
+            return "y";
+        default:
+            break;
+    }
+}
+char *atomoOpAsig(int val){
+    switch(val){
+        case 0:
+            return "=";
+        case 1:
+            return "#";
+        case 2:
+            return "ñ";
+        case 3:
+            return "$";
+        case 4:
+            return "v";
+        case 5:
+            return "?";
+        case 6: 
+            return ":";
+        case 7: 
+            return "\"";
+        case 8: 
+            return "^";
+        case 9: 
+            return "&";
+        default:
+            break;
+    }
+}
+
+
 
 %}
 %option noyywrap
