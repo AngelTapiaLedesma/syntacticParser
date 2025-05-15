@@ -5,10 +5,9 @@ Tapia Ledesma Angel Hazel
 Arroyo Ramirez Carlos Alberto
 Fecha de entrega: 18/03/2025
 
-Objetivo: Elaborar un analizador léxico en lex/flex que reconozca los componentes léxicos pertenecientes 
-a las clases abajo descritas y que fueron definidas en clase. 
-Generando un analizador el cual reconozca de forma óptima las componentes del lenguaje para así posteriormente 
-adjuntar su salida con la entrada del analizador sintáctico.
+Objetivo: A partir del analizador lexico obtenido en el proyecto anterior, genera un analizador sintactico el cual nos perimta obtener una cadena de atomos, y mediante ella
+se realice un analisis sintactico para ver si el programa obtenido pertenece o no a la gramatica definida. 
+ 
 
 };
 */
@@ -28,6 +27,13 @@ typedef struct Simbolo {
     int tipo;
     struct Simbolo *siguiente;
 } Simbolo;
+
+typedef struct Atomo {
+    char *valor;
+    struct Atomo *siguiente;
+} Atomo;
+
+Atomo *listaAtomos = NULL; // Lista global de átomos
 
 // Prototipos de las funciones
 int buscar_catalogo(char *catalogo[], char *literal, int tamano);
@@ -49,6 +55,9 @@ Literal *buscar_literal(Literal *tabla, char *literal);
 void imprimir_tabla(Literal *tabla, char *nombre_arch);
 char *token_literales(int pos, char *nombre, Literal **tabla);
 
+void agregarAtomo(char *atomo);
+void imprimirCadenaAtomos();
+
 // Atomos
 char *generarAtomo(int pos, int val);
 char *atomoPalRes(int val);
@@ -56,6 +65,9 @@ char *atomoSimbEsp(int val);
 char *atomoOpArim(int val);
 char *atomoOpRel(int val);
 char *atomoOpAsig(int val);
+
+// Funciones recursivas
+void program(char* cadenaAtomos);
 
 // Creación de las tablas dinámicas
 Simbolo *tabla_simbolos = NULL;
@@ -308,31 +320,81 @@ void cerrar_archivo(FILE *archivo) {
     fclose(archivo);
 }
 
+// Funciones atomos 
+void agregarAtomo(char *atomo) {
+    Atomo *nuevoAtomo = (Atomo *)malloc(sizeof(Atomo));
+    nuevoAtomo->valor = strdup(atomo);
+    nuevoAtomo->siguiente = NULL;
+
+    if (listaAtomos == NULL) {
+        listaAtomos = nuevoAtomo;
+    } else {
+        Atomo *actual = listaAtomos;
+        while (actual->siguiente != NULL) {
+            actual = actual->siguiente;
+        }
+        actual->siguiente = nuevoAtomo;
+    }
+    return;
+}
+
+void imprimirCadenaAtomos() {
+    Atomo *actual = listaAtomos;
+    FILE *archAtomos = abrir_archivo("atomos.txt", "w");
+
+    printf("\nCadena de átomos generados:\n");
+    fprintf(archAtomos, "Cadena de átomos:\n");
+
+    while (actual != NULL) {
+        printf("%s ", actual->valor);
+        fprintf(archAtomos, "%s ", actual->valor);
+        actual = actual->siguiente;
+    }
+
+    printf("\n");
+    fprintf(archAtomos, "\n");
+    cerrar_archivo(archAtomos);
+    return;
+}
 // Analisis sintactico 
 char *generarAtomo(int pos, int val){
+    char *atomo = "";
     switch(pos){
         case 0:
-            return atomoPalRes(val);
+            atomo = atomoPalRes(val);
+            break; 
         case 1:
-            return atomoSimbEsp(val);
+            atomo = atomoSimbEsp(val);
+            break; 
         case 2:
-            return "a";
+            atomo = "a";
+            break; 
         case 3:
-            return atomoOpArim(val);
+            atomo = atomoOpArim(val);
+            break; 
         case 4:
-            return atomoOpRel(val);
+            atomo = atomoOpRel(val);
+            break; 
         case 5:
-            return atomoOpAsig(val);
+            atomo = atomoOpAsig(val);
+            break; 
         case 6:
-            return "s";
+            atomo = "s";
+            break; 
         case 7:
-            return "e";
+            atomo = "e";
+            break; 
         case 8:
-            return "r";
+            atomo = "r";
+            break; 
         default:
-            return "";
+            atomo = "";
+            break;
     }
-    return "";
+    if (strcmp(atomo, "") != 0) {
+        agregarAtomo(atomo); // Solo agrega si el átomo no es ""
+    }
+    return atomo;
 }
 char *atomoPalRes(int val){
     switch(val){
@@ -470,6 +532,144 @@ char *atomoOpAsig(int val){
     return "";
 }
 
+// Funciones recursivas
+/*
+void rechaza(){
+    printf("Error sintactico\n");
+    return;
+}
+
+void program(char *cadenaAtomos) {
+    listDecGlob();
+    func();
+    otraFunc();    
+    return;
+}
+void listDecGlob() {
+    char c = getchar();
+    if(c == "g"){
+        decGlobal();
+        listDecGlob();
+        return;    
+    }
+    
+    return;
+}
+
+void () {
+    return;
+}
+void () {
+    return;
+}
+void () {
+    return;
+}
+void () {
+    return;
+}
+
+void () {
+    return;
+}
+void () {
+    return;
+}
+void () {
+    return;
+}
+void () {
+    return;
+}
+
+void () {
+    return;
+}
+void () {
+    return;
+}
+void () {
+    return;
+}
+void () {
+    return;
+}
+
+void () {
+    return;
+}
+void () {
+    return;
+}
+void () {
+    return;
+}
+void () {
+    return;
+}
+
+void () {
+    return;
+}
+void () {
+    return;
+}
+void () {
+    return;
+}
+void () {
+    return;
+}
+
+void () {
+    return;
+}
+void () {
+    return;
+}
+void () {
+    return;
+}
+void () {
+    return;
+}
+
+void () {
+    return;
+}
+void () {
+    return;
+}
+void () {
+    return;
+}
+void () {
+    return;
+}
+
+void () {
+    return;
+}
+void () {
+    return;
+}
+void () {
+    return;
+}
+void () {
+    return;
+}
+void () {
+    return;
+}
+
+void () {
+    return;
+}
+void () {
+    return;
+}
+*/
 %}
 %option noyywrap
 
@@ -573,6 +773,8 @@ int main(int argc, char **argv) {
     
     printf("\nTabla de reales\n");
     imprimir_tabla(tabla_reales, "reales.txt");
+
+    imprimirCadenaAtomos();
 
     return 0;
 }
