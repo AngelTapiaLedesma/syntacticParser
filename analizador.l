@@ -10,26 +10,10 @@ a las clases abajo descritas y que fueron definidas en clase.
 Generando un analizador el cual reconozca de forma óptima las componentes del lenguaje para así posteriormente 
 adjuntar su salida con la entrada del analizador sintáctico.
 
-char *palRes[16][2] = {
-    {"Bool","b"},
-    {"Cade","c"},
-    {"Continuar","t"},
-    {"Devo","d"},
-    {"Ent","n"},
-    {"Fals","q"},
-    {"Flota","f"},
-    {"Global","g"},
-    {"Haz","h"},
-    {"Mientras","w"},
-    {"Nulo","u"},
-    {"Para","o"},
-    {"Parar","p"},
-    {"Si","i"},
-    {"Sino","l"},
-    {"Ver","m"}
 };
 */
 #include <stdio.h>
+#include <string.h>
 
 // Estructuras para las tablas
 typedef struct Literal {
@@ -131,7 +115,7 @@ char *simbEsp[9] = {
     "<<",
     ">>",
     "#",
-    "!#",
+    "#!",
     "*",
     "|",
     "°"
@@ -285,6 +269,8 @@ char *token_simbolos(int pos, char *nombre, Simbolo **tabla) {
     FILE *archTokens = abrir_archivo("tokens.txt","a");
     fprintf(archTokens, "%i,%i\n", pos, simbolo->valor);
     cerrar_archivo(archTokens);
+    // Sintactico 
+    printf("\t%s\t",generarAtomo(pos,simbolo->valor));
     return "Caracter";
 }
 
@@ -296,6 +282,8 @@ char *token_literales(int pos, char *nombre, Literal **tabla) {
     FILE *archTokens = abrir_archivo("tokens.txt","a");
     fprintf(archTokens, "%i,%i\n", pos, literal->valor);
     cerrar_archivo(archTokens);
+    // Sintactico 
+    printf("\t%s\t",generarAtomo(pos,literal->valor));
     return "Caracter";
 }
 
@@ -328,7 +316,7 @@ char *generarAtomo(int pos, int val){
         case 1:
             return atomoSimbEsp(val);
         case 2:
-            break;
+            return "a";
         case 3:
             return atomoOpArim(val);
         case 4:
@@ -336,18 +324,16 @@ char *generarAtomo(int pos, int val){
         case 5:
             return atomoOpAsig(val);
         case 6:
-            break;
+            return "s";
         case 7:
-            break;
+            return "e";
         case 8:
-            break;
+            return "r";
         default:
-            break;
-
+            return "";
     }
+    return "";
 }
-
-
 char *atomoPalRes(int val){
     switch(val){
         case 0:
@@ -385,6 +371,7 @@ char *atomoPalRes(int val){
         default:
             break;
     }
+    return "";
 }
 char *atomoSimbEsp(int val){
     switch(val){
@@ -409,6 +396,7 @@ char *atomoSimbEsp(int val){
         default:
             break;
     }
+    return "";
 }
 char *atomoOpArim(int val){
     switch(val){
@@ -433,6 +421,7 @@ char *atomoOpArim(int val){
         default:
             break;
     }
+    return "";
 }
 char *atomoOpRel(int val){
     switch(val){
@@ -451,6 +440,7 @@ char *atomoOpRel(int val){
         default:
             break;
     }
+    return "";
 }
 char *atomoOpAsig(int val){
     switch(val){
@@ -477,9 +467,8 @@ char *atomoOpAsig(int val){
         default:
             break;
     }
+    return "";
 }
-
-
 
 %}
 %option noyywrap
