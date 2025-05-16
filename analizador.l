@@ -11,7 +11,7 @@ se realice un analisis sintactico para ver si el programa obtenido pertenece o n
 
 };
 */
-#include "parser.h" // archivo de yaak
+//#include "parser.h" // archivo de yaak
 #include <stdio.h>
 #include <string.h>
 
