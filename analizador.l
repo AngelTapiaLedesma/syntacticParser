@@ -67,8 +67,11 @@ char *atomoOpRel(int val);
 char *atomoOpAsig(int val);
 
 // Funciones recursivas
-void program(char* cadenaAtomos);
-
+void program();
+void listDecGlob();
+void otraFunc();
+void decGlob();
+void listDecGlob();
 // Creación de las tablas dinámicas
 Simbolo *tabla_simbolos = NULL;
 Literal *tabla_cadenas = NULL;
@@ -343,11 +346,11 @@ void imprimirCadenaAtomos() {
     FILE *archAtomos = abrir_archivo("atomos.txt", "w");
 
     printf("\nCadena de átomos generados:\n");
-    fprintf(archAtomos, "Cadena de átomos:\n");
+    //fprintf(archAtomos, "Cadena de átomos:\n");
 
     while (actual != NULL) {
         printf("%s ", actual->valor);
-        fprintf(archAtomos, "%s ", actual->valor);
+        fprintf(archAtomos, "%s", actual->valor);
         actual = actual->siguiente;
     }
 
@@ -533,35 +536,50 @@ char *atomoOpAsig(int val){
 }
 
 // Funciones recursivas
-/*
+
 void rechaza(){
     printf("Error sintactico\n");
     return;
 }
 
-void program(char *cadenaAtomos) {
+void program() {
     listDecGlob();
-    func();
+    //func();
     otraFunc();    
     return;
 }
 void listDecGlob() {
     char c = getchar();
-    if(c == "g"){
-        decGlobal();
+    if(c == 'g'){
+        ungetc(c,stdin);
+        decGlob();
         listDecGlob();
         return;    
     }
-    
     return;
 }
 
-void () {
+void otraFunc() {
+    char c = getchar();
+    if(c == 'b' ||c == 'c' ||c == 'n' ||c == 'f'){
+        ungetc(c,stdin);
+        //func();
+        otraFunc();
+        return;    
+    }
     return;
 }
-void () {
-    return;
+
+void decGlob() {
+    char c = getchar();
+    // 1. Verificar terminal 'g'
+    if (c != 'g') {
+        rechaza();
+    }  
+    // 2. Procesar <decl> (no necesitas otro getchar)
+   // decl();  // decl() manejará lo que sigue (ej: tipos b/c/n/f)
 }
+/*
 void () {
     return;
 }
@@ -775,6 +793,9 @@ int main(int argc, char **argv) {
     imprimir_tabla(tabla_reales, "reales.txt");
 
     imprimirCadenaAtomos();
+
+    program();
+
 
     return 0;
 }
