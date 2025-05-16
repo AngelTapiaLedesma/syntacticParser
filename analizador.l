@@ -11,8 +11,11 @@ se realice un analisis sintactico para ver si el programa obtenido pertenece o n
 
 };
 */
+#include "parser.h" // archivo de yaak
 #include <stdio.h>
 #include <string.h>
+
+void yyerror(const char *s); // Manejo de errores con flex
 
 // Estructuras para las tablas
 typedef struct Literal {
@@ -537,157 +540,6 @@ char *atomoOpAsig(int val){
 
 // Funciones recursivas
 
-void rechaza(){
-    printf("Error sintactico\n");
-    return;
-}
-
-void program() {
-    listDecGlob();
-    //func();
-    otraFunc();    
-    return;
-}
-void listDecGlob() {
-    char c = getchar();
-    if(c == 'g'){
-        ungetc(c,stdin);
-        decGlob();
-        listDecGlob();
-        return;    
-    }
-    return;
-}
-
-void otraFunc() {
-    char c = getchar();
-    if(c == 'b' ||c == 'c' ||c == 'n' ||c == 'f'){
-        ungetc(c,stdin);
-        //func();
-        otraFunc();
-        return;    
-    }
-    return;
-}
-
-void decGlob() {
-    char c = getchar();
-    // 1. Verificar terminal 'g'
-    if (c != 'g') {
-        rechaza();
-    }  
-    // 2. Procesar <decl> (no necesitas otro getchar)
-   // decl();  // decl() manejará lo que sigue (ej: tipos b/c/n/f)
-}
-/*
-void () {
-    return;
-}
-void () {
-    return;
-}
-
-void () {
-    return;
-}
-void () {
-    return;
-}
-void () {
-    return;
-}
-void () {
-    return;
-}
-
-void () {
-    return;
-}
-void () {
-    return;
-}
-void () {
-    return;
-}
-void () {
-    return;
-}
-
-void () {
-    return;
-}
-void () {
-    return;
-}
-void () {
-    return;
-}
-void () {
-    return;
-}
-
-void () {
-    return;
-}
-void () {
-    return;
-}
-void () {
-    return;
-}
-void () {
-    return;
-}
-
-void () {
-    return;
-}
-void () {
-    return;
-}
-void () {
-    return;
-}
-void () {
-    return;
-}
-
-void () {
-    return;
-}
-void () {
-    return;
-}
-void () {
-    return;
-}
-void () {
-    return;
-}
-
-void () {
-    return;
-}
-void () {
-    return;
-}
-void () {
-    return;
-}
-void () {
-    return;
-}
-void () {
-    return;
-}
-
-void () {
-    return;
-}
-void () {
-    return;
-}
-*/
 %}
 %option noyywrap
 
@@ -716,7 +568,84 @@ ent [+-]?(0|[1-9]{digito}*)[pg]?
 real (({ent}?'{digito}+)|({ent}[rR]))
 
 %%
+"Bool"          {return T_BOOL;}
+"Cade"          {return T_CADE;}
+"Continuar"     {return T_CONTINUAR;}
+"Devo"          {return T_DEVO;}
+"Ent"           {return T_ENT;}
+"Fals"          {return T_FALS;}
+"Flota"         {return T_FLOTA;}
+"Global"        {return T_GLOBAL;}
+"Haz"           {return T_HAZ;}
+"Mientras"      {return T_MIENTRAS;}
+"Nulo"          {return T_NULO;}
+"Para"          {return T_PARA;}
+"Parar"         {return T_PARAR;}
+"Si"            {return T_SI;}
+"Sino"          {return T_SINO;}
+"Ver"           {return T_VER;}
 
+"<"         {return T_MENOR;}
+">"         {return T_MAYOR;}
+"<<"        {return T_CORRIZQ;}
+">>"        {return T_CORRDER;}
+"#"         {return T_ALMOHADILLA;}
+"#!"        {return T_ALMOHOADILLAFIN;}
+"*"         {return T_ASTERISCO;}
+"|"         {return T_PIPE;}
+"°"         {return T_GRADO;}
+
+"sum"       {return T_SUM;}
+"rest"      {return T_REST;}
+"mult"      {return T_MULT;}
+"div"       {return T_DIV;}
+"mod"       {return T_MOD;}
+"inc"       {return T_INC;}
+"dec"       {return T_DEC;}
+"exp"       {return T_EXP;}
+"dive"      {return T_DIVE;}
+
+"he"        {return T_HE;}
+"h"         {return T_H;}
+"m"         {return T_M;}
+"e"         {return T_E;}
+"c"         {return T_C;}
+"me"        {return T_HM;}
+
+"->"        {return T_ASIG;}
+"+->"       {return T_SUMASIG;}
+"-->"       {return T_RESASIG;}
+"*->"       {return T_MULTASIG;}
+"/->"       {return T_DIVASIG;}
+"%->"       {return T_MODASIG;}
+">>->"      {return T_CORRDASIG;}
+"<<->"      {return T_CORRIASIG;}
+"^->"       {return T_EXPASIG;}
+"&->"       {return T_CONCATASIG;}
+
+{ identificador } {
+    yylval.str = strdup(yytext);
+    return T_IDENTIFICADOR;
+}
+
+{ cadena } {
+    yylval.str = strdup(yytext);
+    return T_CADENA;
+}
+
+{ ent } {
+    yylval.str = strdup(yytext);
+    return T_ENT;
+}
+
+{ real } {
+    yylval.str = strdup(yytext);
+    return T_REAL;
+}   
+%%
+
+
+/*
 {palRes}       {token(0, yytext, palRes, 16); printf(" %s es una palabra reservada\n", yytext);}
 {opArim}       {token(3, yytext, opArim, 9); printf(" %s es un operador aritmetico\n", yytext); }
 {opAsign}      {token(5, yytext, opAsign, 10); printf(" %s es un operador de asignacion\n", yytext); }
@@ -729,8 +658,7 @@ real (({ent}?'{digito}+)|({ent}[rR]))
 {ent}           {token_literales(8, yytext, &tabla_enteros);printf("%s es un entero\n", yytext); }
 [ \t\n\r]+ ; // Ignorar espacios, tabulaciones y saltos de      línea
 .              {errores(yytext); printf("%s no es reconocido\n", yytext); }
-%%
-
+*/
 int main(int argc, char **argv) {
     // Lee desde un archivo 
     // Verificar si se proporcionó un archivo de entrada

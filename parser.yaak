@@ -1,0 +1,71 @@
+%{
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Funciones externas
+void yyerror(const char *s);
+int yylex(void);
+
+// Para manejar valores de tokens
+%union {
+    char* str;   // Para identificadores/cadenas
+    int num;     // Para enteros
+    float fnum;  // Para reales
+}
+
+// Declara TODOS los tokens usados en lexer.l
+%token T_BOOL T_CADE T_CONTINUAR T_DEVO T_ENT T_FALS T_FLOTA T_GLOBAL
+%token T_HAZ T_MIENTRAS T_NULO T_PARA T_PARAR T_SI T_SINO T_VER
+
+%token T_MENOR T_MAYOR T_CORRIZQ T_CORRDER T_ALMOHADILLA T_ALMOHOADILLAFIN
+%token T_ASTERISCO T_PIPE T_GRADO
+
+%token T_SUM T_REST T_MULT T_DIV T_MOD T_INC T_DEC T_EXP T_DIVE
+%token T_H T_M T_E T_C T_HE T_ME
+
+%token T_ASIG T_SUMASIG T_RESASIG T_MULTASIG T_DIVASIG T_MODASIG
+%token T_CORRDASIG T_CORRIASIG T_EXPASIG T_CONCATASIG
+
+%token <str> T_IDENTIFICADOR T_CADENA
+%token <num> T_ENT
+%token <fnum> T_REAL
+
+// Precedencia de operadores
+%left '+' '-'
+%left '*' '/' '%'
+%right '^'
+
+%%
+
+Programa:
+    ListDecGlob Func otraFunc
+    ;
+
+ListDecGlob:
+    DecGlobal ListDecGlob
+    |
+    ;
+
+otraFunc:
+    T_GLOBAL tipo T_IDENTIFICADOR ';' {
+        printf("Declarada variable global: %s\n", $3);
+        free($3);  // Libera memoria del identificador
+    }
+    ;
+
+tipo:
+    T_ENT   { printf("Tipo entero\n"); }
+    | T_FLOTA { printf("Tipo flotante\n"); }
+    ;
+
+%% 
+
+void yyerror(const char *s) {
+    fprintf(stderr, "Error sintáctico: %s\n", s);
+}
+
+int main() {
+    yyparse();
+    return 0;
+}
