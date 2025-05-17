@@ -3,19 +3,21 @@
 Elaborado por:
 Tapia Ledesma Angel Hazel 
 Arroyo Ramirez Carlos Alberto
-Fecha de entrega: 18/03/2025
+Fecha de entrega: 16/05/2025
 
-Objetivo: A partir del analizador lexico obtenido en el proyecto anterior, genera un analizador sintactico el cual nos perimta obtener una cadena de atomos, y mediante ella
+Objetivo: 
+Construir, en un mismo programa, los analizadores Léxico y Sintáctico Descendente Recursivo 
+que revisen programas escritos en el lenguaje definido en el documento del proyecto.
+
+A partir del analizador lexico obtenido en el proyecto anterior, genera un analizador sintactico el cual nos perimta obtener una cadena de atomos, y mediante ella
 se realice un analisis sintactico para ver si el programa obtenido pertenece o no a la gramatica definida. 
- 
-
-};
+Esto con ayuda de herramientas como bison para la generacion del analisis
+y tambien con base en los conocimientos adquiridos en el salon de clase. 
 */
-//#include "parser.h" // archivo de yaak
-#include <stdio.h>
+#include "parser.tab.h"
 #include <string.h>
+#include <stdlib.h>
 
-void yyerror(const char *s); // Manejo de errores con flex
 
 // Estructuras para las tablas
 typedef struct Literal {
@@ -538,26 +540,13 @@ char *atomoOpAsig(int val){
     return "";
 }
 
-// Funciones recursivas
-
 %}
 %option noyywrap
+
 
 digito      [0-9]
 
 letra       [a-zA-ZñÑáéíóúÁÉÍÓÚüÜ]
-
-comentario   \[.+\]
-
-palRes Bool|Cade|Continuar|Devo|Ent|Fals|Flota|Global|Haz|Mientras|Nulo|Para|Parar|Si|Sino|Ver
-
-simbEsp "<"|">"|"<<"|">>"|"#"|"#!"|"*"|"|"|"°"
-
-opArim sum|rest|mult|div|mod|inc|dec|exp|dive
-
-opRel "h"|"m"|"e"|"c"|"he"|"me"
-
-opAsign "->"|"+->"|"-->"|"*->"|"/->"|"%->"|">>->"|"<<->"|"^->"|"&->"
 
 identificador @({letra}|{digito})+_
 
@@ -567,7 +556,11 @@ ent [+-]?(0|[1-9]{digito}*)[pg]?
 
 real (({ent}?'{digito}+)|({ent}[rR]))
 
+comentario   \[.+\]
+
+
 %%
+
 "Bool"          {return T_BOOL;}
 "Cade"          {return T_CADE;}
 "Continuar"     {return T_CONTINUAR;}
@@ -585,15 +578,6 @@ real (({ent}?'{digito}+)|({ent}[rR]))
 "Sino"          {return T_SINO;}
 "Ver"           {return T_VER;}
 
-"<"         {return T_MENOR;}
-">"         {return T_MAYOR;}
-"<<"        {return T_CORRIZQ;}
-">>"        {return T_CORRDER;}
-"#"         {return T_ALMOHADILLA;}
-"#!"        {return T_ALMOHOADILLAFIN;}
-"*"         {return T_ASTERISCO;}
-"|"         {return T_PIPE;}
-"°"         {return T_GRADO;}
 
 "sum"       {return T_SUM;}
 "rest"      {return T_REST;}
@@ -607,12 +591,11 @@ real (({ent}?'{digito}+)|({ent}[rR]))
 
 "he"        {return T_HE;}
 "h"         {return T_H;}
+"me"        {return T_ME;}
 "m"         {return T_M;}
 "e"         {return T_E;}
 "c"         {return T_C;}
-"me"        {return T_HM;}
 
-"->"        {return T_ASIG;}
 "+->"       {return T_SUMASIG;}
 "-->"       {return T_RESASIG;}
 "*->"       {return T_MULTASIG;}
@@ -622,30 +605,38 @@ real (({ent}?'{digito}+)|({ent}[rR]))
 "<<->"      {return T_CORRIASIG;}
 "^->"       {return T_EXPASIG;}
 "&->"       {return T_CONCATASIG;}
+"->"        {return T_ASIG;}
 
-{ identificador } {
+
+
+
+identificador {
     yylval.str = strdup(yytext);
     return T_IDENTIFICADOR;
 }
 
-{ cadena } {
+cadena {
     yylval.str = strdup(yytext);
     return T_CADENA;
 }
 
-{ ent } {
-    yylval.str = strdup(yytext);
-    return T_ENT;
+real {
+    yylval.fnum = atof(yytext);
+    return T_REAL;
+}  
+
+ent {
+    yylval.num = atoi(yytext);
+    return T_ENTE;
 }
 
-{ real } {
-    yylval.str = strdup(yytext);
-    return T_REAL;
-}   
+\n      { yylineno++; }
+
+
 %%
 
-
 /*
+
 {palRes}       {token(0, yytext, palRes, 16); printf(" %s es una palabra reservada\n", yytext);}
 {opArim}       {token(3, yytext, opArim, 9); printf(" %s es un operador aritmetico\n", yytext); }
 {opAsign}      {token(5, yytext, opAsign, 10); printf(" %s es un operador de asignacion\n", yytext); }
@@ -659,6 +650,7 @@ real (({ent}?'{digito}+)|({ent}[rR]))
 [ \t\n\r]+ ; // Ignorar espacios, tabulaciones y saltos de      línea
 .              {errores(yytext); printf("%s no es reconocido\n", yytext); }
 */
+/*
 int main(int argc, char **argv) {
     // Lee desde un archivo 
     // Verificar si se proporcionó un archivo de entrada
@@ -722,8 +714,6 @@ int main(int argc, char **argv) {
 
     imprimirCadenaAtomos();
 
-    program();
-
-
     return 0;
 }
+*/
